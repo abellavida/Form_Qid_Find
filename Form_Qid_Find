@@ -1,0 +1,73 @@
+import string
+import re
+
+filename = raw_input('Name your file: ')
+
+f = open('/home/johnec3/RAM/ID List_Prod.txt','r')
+y = open('/home/johnec3/RAM/%s.txt' %filename,'w')
+lines = f.readlines()[1:]
+
+hdr = str("FormID"+','+"Form Name"+','+"Field QID"+','+"Field Name"+'\n')
+y.write(hdr)
+
+qid_data = {}
+form_data = {}
+all_data = {}
+
+def create_dict():      ## If list with Tabs qid = ''.join([c for c in data[1]if c.isdigit()]) and fieldID  =  data[2] otherwise
+    formID = []
+    for x in lines:         ## qid = ''.join([c for c in data[2] if c.isdigit()]) and fieldID = data[3]
+        data = x.split('\t')
+        qid = ''.join([c for c in data[1] if c.isdigit()])
+        form_name = ''.join([c for c in data[1] if not c.isdigit()])
+        if formID != data[0]:
+            qid_data = {}
+        else:
+            pass
+        formID = data[0]
+        fieldID = data[2]
+        fieldID = fieldID.rstrip()
+        fieldID = fieldID.lstrip()
+        form_name = form_name.lstrip()
+        form_name = form_name.rstrip(' \t')
+        #s = (formID, ',', form_name, ',', qid, ',', fieldID,'\n')
+        form_data.update({formID:form_name})
+        qid_data.update({qid:fieldID})
+        all_data.update({formID:qid_data})
+        #y.writelines(s)
+        #print s
+
+def search_dict():
+    find_qid = raw_input("What Form Field QID are you looking for (Press Enter to skip)? ")
+    find_form_field = raw_input ("What is the Form Field name? ")
+    for key, value in all_data.iteritems():
+        for qid2, field in value.iteritems():
+            if find_qid == qid2:
+                s = (key, ',', form_data[key], ',', qid2, ',', field, '\n')
+                print s
+                y.writelines(s)
+                break
+            elif find_form_field == field:
+                s = (key, ',' , form_data[key], ',', qid2, ',', field, '\n')
+                print s
+                y.writelines(s)
+            else:
+                pass
+##    for key, value in all_data.iteritems():
+##        s = (key, ',' , form_data[key], ',', find_qid, ',').join([z for z in value[find_qid] if find_qid == value.keys()])
+##        print s
+##        y.writelines(s)
+                
+
+def main():
+    create_dict()
+    search_dict()
+
+if __name__ == "__main__":
+    main()
+
+    
+y.close()
+f.close()
+#print ('\n\n',"Press Enter to EXIT")
+#raw_input()
